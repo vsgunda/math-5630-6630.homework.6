@@ -113,9 +113,9 @@ classdef hw06
             % :param N: it means 2^N is the maximum number of subintervals to use for the integration. 
             %           The Romberg method will start with 2^1=2 subintervals and double the number of subintervals until 2^N
             % :param option: The type of quadrature rule to use (1, 2, or 3). See p1.
-            % :return: The approximate integral of the function over the interval [0, 1].
+            % :return: The approximate integral of the function over the interval [a, b].
 
-            % Note, the "powers" used in Richardson extrapolation should be [2, 4, 6, ...] for option 1 and 2. 
+            % Note, the "powers" used in Richardson extrapolation (see hw05.m) should be [2, 4, 6, ...] for option 1 and 2. 
             % For option 3, the "powers" should be [4, 6, 8, ...].
 
             % your code here.
