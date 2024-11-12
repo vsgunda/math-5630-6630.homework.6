@@ -141,6 +141,28 @@ classdef hw06
             ret = [roots, weights];  % Return the roots and weights of the Gauss quadrature rule
         end
 
+
+        function ret = p5(n)
+            % For 6630 ONLY. 
+
+            % Construct the Gauss quadrature rule using the roots of the Legendre polynomial of degree n
+            %
+            % :param n: The degree of the Legendre polynomial for the nodes of the Gauss quadrature rule.
+            % :return: An nx2 matrix containing the roots and weights of the Gauss quadrature rule.
+            % 
+            % To evaluate Legendre polynomial or its derivative of a specific degree n, the handles are:
+            % @(x) hw06.legendre_poly(n, x) and @(x) hw06.deriv_lengendre_poly(n, x).
+            % 
+
+            roots = zeros(n, 1);
+            weights = zeros(n, 1);
+
+            % your code here.
+
+            ret = [roots, weights];  % Return the roots and weights of the Gauss quadrature rule
+
+        end
+        
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %                                                                                                             %
         % Helper functions below. Do not modify. You can create your own helper functions if needed.                  %
@@ -157,7 +179,6 @@ classdef hw06
             val = (231 * x^6 - 315 * x^4 + 105 * x^2 - 5) / 16;
         end
 
-
         % Helper functions for p5. The following function is used to evaluate the Legendre polynomial of degree n.
         function val = legendre_poly(n, x)
             % Compute the nth Legendre polynomial P_n at the point x.
@@ -173,6 +194,15 @@ classdef hw06
             else
                 val = hw06.legendre_poly(n-1, x) * x * (2 * n - 1)/n - (n - 1) * hw06.legendre_poly(n - 2, x) / n;
             end
+        end
+
+        function val = deriv_lengendre_poly(n, x)
+            % Compute the derivative of the nth Legendre polynomial P_n at the point x.
+            %   
+            % :param n: The degree of the Legendre polynomial.
+            % :param x: The point at which to evaluate the derivative of the Legendre polynomial.
+            % :return: The value of the derivative of the nth Legendre polynomial at the point x.
+            val = n / (x^2 - 1) * (x * hw06.legendre_poly(n, x) - hw06.legendre_poly(n - 1, x));
         end
     end
 end
