@@ -5,6 +5,9 @@
 
 classdef hw06
     methods (Static)
+        
+        % Problem 1
+
         function ret = p1(func, a, b, n, option)
             % Implement composite quadrature rules for numerical integration
             % of a function over the interval [a, b] with n subintervals.
@@ -36,6 +39,9 @@ classdef hw06
                 error('Invalid option: %d', option);
             end
         end
+
+
+        % Problem 2
 
         function p2()
             % run with the following command: hw06.p2(). Do not edit this function.
@@ -103,6 +109,8 @@ classdef hw06
 
         end
 
+        
+        % Problem 3
 
         function ret = p3(func, a, b, N, option)
             % Use your implemented Richardson extrapolation function in HW05 to implement the Romberg integration method.
@@ -125,6 +133,8 @@ classdef hw06
 
 
 
+        % Problem 4
+        
         function ret = p4()
             % Construct the Gauss quadrature rule using the roots of the Legendre polynomial of degree 6.
             % 
