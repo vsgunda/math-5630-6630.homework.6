@@ -49,7 +49,7 @@ classdef hw06
             % It checks the convergence of the composite quadrature rules implemented in p1.
             %
             % Here we use some examples, 
-            % f_1(x) = 1/(1 + 25x^2), 
+            % f_1(x) = exp(x) 
             % f_2(x) = (1 - x^2)^3, this function's first 2 derivatives at the endpoints are zero.
             % f_3(x) = (1 - x^2)^5, this function's first 4 derivatives at the endpoints are zero.
             % f_4(x) = (1 - x^2)^7, this function's first 6 derivatives at the endpoints are zero.
