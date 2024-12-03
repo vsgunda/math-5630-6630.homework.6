@@ -1,5 +1,5 @@
-% Author: Your Name / your_email
-% Date: 2024-09-01
+% Author: Vishnu Gunda / vsg0005@auburn.edu
+% Date: 2024-12-02
 % Assignment Name: hw06
 
 
@@ -9,37 +9,49 @@ classdef hw06
         % Problem 1
 
         function ret = p1(func, a, b, n, option)
-            % Implement composite quadrature rules for numerical integration
-            % of a function over the interval [a, b] with n subintervals.
-            % The option parameter determines the type of quadrature rule to use: 
-            % 1 for the midpoint rule, 2 for the trapezoidal rule, and 3 for Simpson's rule.
+    % Implement composite quadrature rules for numerical integration
+    % of a function over the interval [a, b] with n subintervals.
+    % The option parameter determines the type of quadrature rule to use: 
+    % 1 for the midpoint rule, 2 for the trapezoidal rule, and 3 for Simpson's rule.
 
-            %:param func: The function to integrate, provided as a function handle.
-            %:param a: The lower bound of the integration interval.
-            %:param b: The upper bound of the integration interval.
-            %:param n: The number of subintervals to use for the integration.
-            %:param option: The type of quadrature rule to use (1, 2, or 3).
-            %:return: The approximate integral of the function over the interval [a, b].
+    % Check for even number of intervals for Simpson's rule
+    if option == 3 && mod(n, 2) ~= 0
+        error('n must be even for Simpsons rule');
+    end
 
-            % your code here.
-            if option == 1
-                % your code of composite midpoint rule
-                ret = inf;
-            elseif option == 2
-                % your code of composite trapezoidal rule
-                ret = inf;
-            elseif option == 3
-                % your code of composite Simpson's rule
-                if mod(n, 2) ~= 0
-                    error('n must be even for Simpsons rule');
-                end
+    % Step size
+    h = (b - a) / n;
 
-                ret = inf;
-            else
-                error('Invalid option: %d', option);
-            end
+    % Initialize result
+    ret = 0;
+
+    if option == 1
+        % Composite midpoint rule
+        for i = 1:n
+            xk = a + (i - 1) * h; % Left endpoint of the subinterval
+            xk1 = xk + h;         % Right endpoint of the subinterval
+            midpoint = (xk + xk1) / 2;
+            ret = ret + h * func(midpoint);
         end
-
+    elseif option == 2
+        % Composite trapezoidal rule
+        for i = 1:n
+            xk = a + (i - 1) * h; % Left endpoint of the subinterval
+            xk1 = xk + h;         % Right endpoint of the subinterval
+            ret = ret + (h / 2) * (func(xk) + func(xk1));
+        end
+    elseif option == 3
+        % Composite Simpson's rule
+        for i = 1:2:n-1
+            xk = a + (i - 1) * h;   % First endpoint of the interval
+            xk1 = xk + h;           % Midpoint
+            xk2 = xk + 2 * h;       % Second endpoint of the interval
+            ret = ret + (h / 3) * (func(xk) + 4 * func(xk1) + func(xk2));
+        end
+    else
+        error('Invalid option: %d', option);
+    end
+        end
 
         % Problem 2
 
@@ -65,11 +77,43 @@ classdef hw06
 
             % Write your comments here.
             %
+            % For f1 all the rules converge, but Simpson's rule converges
+            % the fastest. The Midpoint and Trapezoidal rules converge at
+            % similar rates. Non-zero endpoints slightly hamper the
+            % convergence
             %
+            % For f2, the results are similar but everything is converging
+            % faster when compared to f1. It is smoother at the boundaries
+            % because the derivatives vanish there
             %
+            % For f3, Simpson's rule converges even faster due to four
+            % derivatives vanishing at x=1 and x=-1. It is closer to
+            % 6th-order convergence
             %
+            % For f4, six derivatives vanish at x=1 and x=-1, making
+            % Simpson's rule converge even faster. Nothing else is
+            % particularly special
             %
+            % Does the Runge phenomenon of f1 (Runge's function) lower the convergence rate?
             %
+            % Yes for f1, especially for the midpoint and trapezoidal rules. This
+            % is shown from the slower reduction in error compared to f2,
+            % f3, and f4. This is due to the non-zero derivatives at the
+            % endpoints. Simpson's rule performs better, but is still
+            % slower compared to f2, f3, and f4.
+            %
+            % Does Simpson's rule have a faster convergence rate than the other two for these examples?
+            %
+            % Yes, it does with every single sample function.
+            %
+            % Based on your observations, what kind of functions can have a faster convergence rate with the given composite quadrature rules?
+            %
+            % Smooth functions and ones that have more derivatives
+            % vanishing at endpoints are able to achieve a faster
+            % convergence rates. For example, the four functions slowly
+            % converge faster and faster. Each continuing function has 2,
+            % 4, and 6 vanishing derivatives and as the number of vanishing
+            % derivatives increases, the rate of convergence increases.
             %
 
             f = {  @(x)exp(x),  @(x) (1 - x.^2 ).^3, @(x)(1 - x.^2).^5,  @(x) (1 - x.^2).^7} ;  % Define the integrand
@@ -113,65 +157,151 @@ classdef hw06
         % Problem 3
 
         function ret = p3(func, a, b, N, option)
-            % Use your implemented Richardson extrapolation function in HW05 to implement the Romberg integration method.
-            %
-            % :param func: The function to integrate, provided as a function handle.
-            % :param a: The lower bound of the integration interval.
-            % :param b: The upper bound of the integration interval.
-            % :param N: it means 2^N is the maximum number of subintervals to use for the integration. 
-            %           The Romberg method will start with 2^1=2 subintervals and double the number of subintervals until 2^N
-            % :param option: The type of quadrature rule to use (1, 2, or 3). See p1.
-            % :return: The approximate integral of the function over the interval [a, b].
-
-            % Note, the "powers" used in Richardson extrapolation (see hw05.m) should be [2, 4, 6, ...] for option 1 and 2. 
-            % For option 3, the "powers" should be [4, 6, 8, ...].
-
-            % your code here.
-            ret = inf;
-
+            % Use Richardson extrapolation (hw05.p1) to implement the Romberg integration method.
+        
+            % Step sizes and quadrature results
+            data = zeros(N+1, 1);       % Quadrature results
+            powers = [];                % Extrapolation powers
+        
+            % Populate the quadrature results
+            for i = 0:N
+                num_intervals = 2^i;          % Number of subintervals
+                if option == 3 && mod(num_intervals, 2) ~= 0
+                    num_intervals = num_intervals + 1; % Ensure even number for Simpson's rule
+                end
+                data(i+1) = hw06.p1(func, a, b, num_intervals, option); % Compute composite quadrature
+            end
+        
+            % Determine powers for Richardson extrapolation
+            if option == 3
+                powers = 4:2:(4 + 2*(N-1));     % Simpson's rule: powers are [4, 6, 8, ...]
+            else
+                powers = 2:2:(2 + 2*(N-1));     % Midpoint/Trapezoidal: powers are [2, 4, 6, ...]
+            end
+        
+            % Use hw05.p1 for Richardson extrapolation
+            ret = hw05.p1(data, powers);
         end
-
 
 
         % Problem 4
         
         function ret = p4()
             % Construct the Gauss quadrature rule using the roots of the Legendre polynomial of degree 6.
-            % 
-            % To evaluate Legendre polynomial of degree 6, use the helper function hw06.legendre_poly_6 defined below.
-            % Its handle is @hw06.legendre_poly_6.
-            % 
-            % :return: A 6x2 matrix containing the roots and weights of the Gauss quadrature rule. 
-            %          The first column contains the roots and the second column contains the corresponding weights.
+        
+            % Step 1: Define intervals where roots are known to exist
+            intervals = [ -1, -3/4; -3/4, -1/4; -1/4, 0; 0, 1/4; 1/4, 3/4; 3/4, 1 ];
+        
+            % Initialize arrays for roots and weights
             roots = zeros(6, 1);
             weights = zeros(6, 1);
-
-            % your code here.
-
-            ret = [roots, weights];  % Return the roots and weights of the Gauss quadrature rule
+        
+            % Step 2: Find the roots using the bisection method
+            for i = 1:6
+                roots(i) = find_root(@hw06.legendre_poly_6, intervals(i, 1), intervals(i, 2), 1e-14);
+            end
+        
+            % Step 3: Compute weights for the roots
+            for i = 1:6
+                weights(i) = 2 / ((1 - roots(i)^2) * (deriv_legendre_poly(6, roots(i))^2));
+            end
+        
+            % Combine roots and weights into the result
+            ret = [roots, weights];
+        
+            % Nested function: Find the root of a function using the bisection method
+            function root = find_root(func, a, b, tol)
+                % Bisection method to find the root of func in the interval [a, b]
+                fa = func(a);
+                fb = func(b);
+        
+                if fa * fb > 0
+                    error('Function does not change sign in the interval [%f, %f]', a, b);
+                end
+        
+                while (b - a) / 2 > tol
+                    c = (a + b) / 2;
+                    fc = func(c);
+                    if fc == 0
+                        break;
+                    elseif fa * fc < 0
+                        b = c;
+                        fb = fc;
+                    else
+                        a = c;
+                        fa = fc;
+                    end
+                end
+        
+                root = (a + b) / 2;
+            end
+        
+            % Nested function: Derivative of Legendre polynomial of degree n
+            function val = deriv_legendre_poly(n, x)
+                % Compute the derivative of the Legendre polynomial of degree n at x
+                if n == 0
+                    val = 0;
+                elseif n == 1
+                    val = 1;
+                else
+                    Pn = hw06.legendre_poly(n, x);
+                    Pn_minus_1 = hw06.legendre_poly(n - 1, x);
+                    val = n / (x^2 - 1) * (x * Pn - Pn_minus_1);
+                end
+            end
         end
 
 
         function ret = p5(n)
-            % For 6630 ONLY. 
-
-            % Construct the Gauss quadrature rule using the roots of the Legendre polynomial of degree n
-            %
-            % :param n: The degree of the Legendre polynomial for the nodes of the Gauss quadrature rule.
-            % :return: An nx2 matrix containing the roots and weights of the Gauss quadrature rule.
-            % 
-            % To evaluate Legendre polynomial or its derivative of a specific degree n, the handles are:
-            % @(x) hw06.legendre_poly(n, x) and @(x) hw06.deriv_lengendre_poly(n, x).
-            % 
-
+            % Construct the Gauss quadrature rule using the roots of the Legendre polynomial of degree n.
+        
+            % Initialize arrays for roots and weights
             roots = zeros(n, 1);
             weights = zeros(n, 1);
-
-            % your code here.
-
-            ret = [roots, weights];  % Return the roots and weights of the Gauss quadrature rule
-
+        
+            % Step 1: Initial guesses for the roots using cosine formula
+            initial_guesses = cos((4 * (1:n) - 1) * pi / (4 * n + 2));
+        
+            % Step 2: Find the roots using Newton's method
+            for k = 1:n
+                roots(k) = newton_method(@(x) hw06.legendre_poly(n, x), ...
+                                         @(x) hw06.deriv_lengendre_poly(n, x), ...
+                                         initial_guesses(k), 1e-14, 100);
+            end
+        
+            % Step 3: Compute weights
+            for k = 1:n
+                weights(k) = 2 / ((1 - roots(k)^2) * (hw06.deriv_lengendre_poly(n, roots(k))^2));
+            end
+        
+            % Combine roots and weights into the result
+            ret = [roots, weights];
+        
+            % Nested function: Newton's method for finding roots
+            function root = newton_method(f, df, x0, tol, max_iter)
+                % f: function handle for the function
+                % df: function handle for the derivative of the function
+                % x0: initial guess
+                % tol: tolerance for convergence
+                % max_iter: maximum number of iterations
+        
+                x = x0;
+                for iter = 1:max_iter
+                    fx = f(x);
+                    dfx = df(x);
+                    if abs(fx) < tol
+                        break;
+                    end
+                    if dfx == 0
+                        error('Derivative is zero. Newton''s method failed.');
+                    end
+                    x = x - fx / dfx;
+                end
+        
+                root = x;
+            end
         end
+
         
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         %                                                                                                             %
@@ -216,4 +346,3 @@ classdef hw06
         end
     end
 end
-
